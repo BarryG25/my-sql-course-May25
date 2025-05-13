@@ -30,6 +30,7 @@ It should be sorted by AdmittedDate (earliest first)
  */
 
 
+
 /*
 We will use the DATENAME function later so let's have a look at it now.
 How many patients were admittted each month?
@@ -75,9 +76,9 @@ SELECT
 	, ps.AdmittedDate
 	, ps.Tariff
 	, COUNT(*) OVER () AS TotalCount
---	, COUNT(*) OVER (PARTITION BY ps.Hospital) AS HospitalCount -- create a window over those rows with the same hospital as the current row
---	, COUNT(*) OVER (PARTITION BY ps.Ward) AS WardCount
---	, COUNT(*) OVER (PARTITION BY ps.Hospital , ps.Ward) AS HospitalWardCount
+	, COUNT(*) OVER (PARTITION BY ps.Hospital) AS HospitalCount -- create a window over those rows with the same hospital as the current row
+	, COUNT(*) OVER (PARTITION BY ps.Ward) AS WardCount
+	, COUNT(*) OVER (PARTITION BY ps.Hospital , ps.Ward) AS HospitalWardCount
 FROM
 	PatientStay ps
 ORDER BY
@@ -92,9 +93,9 @@ SELECT
 	, ps.Tariff
 	, ps.Ward
 	, SUM(ps.Tariff) OVER () AS TotalTariff
---	, SUM(ps.Tariff) OVER (PARTITION BY ps.Ward) AS WardTariff
---	, 100.0 * ps.Tariff / SUM(ps.Tariff) OVER () AS PctOfAllTariff
---	, 100.0 * ps.Tariff / SUM(ps.Tariff) OVER (PARTITION BY ps.Ward) AS PctOfWardTariff
+	, SUM(ps.Tariff) OVER (PARTITION BY ps.Ward) AS WardTariff
+	, 100.0 * ps.Tariff / SUM(ps.Tariff) OVER () AS PctOfAllTariff
+	, 100.0 * ps.Tariff / SUM(ps.Tariff) OVER (PARTITION BY ps.Ward) AS PctOfWardTariff
 FROM
 	PatientStay ps
 ORDER BY
@@ -114,8 +115,8 @@ SELECT
 	, ps.AdmittedDate
 	, ps.Tariff
 	, ROW_NUMBER() OVER (ORDER BY ps.PatientId) AS PatientIndex
---	, ROW_NUMBER() OVER (PARTITION BY ps.Hospital ORDER BY ps.PatientId) AS PatientByHospitalIndex
---  ,COUNT(*) OVER (PARTITION BY ps.Hospital order by ps.PatientId)  as PatientByHospitalIndexAlt -- An alternative way of indexing
+	, ROW_NUMBER() OVER (PARTITION BY ps.Hospital ORDER BY ps.PatientId) AS PatientByHospitalIndex
+    ,COUNT(*) OVER (PARTITION BY ps.Hospital order by ps.PatientId)  as PatientByHospitalIndexAlt -- An alternative way of indexing
 FROM
 	PatientStay ps
 ORDER BY
@@ -134,9 +135,9 @@ SELECT
 	ps.PatientId
 	, ps.Tariff
 	, ROW_NUMBER() OVER (ORDER BY ps.Tariff DESC) AS PatientRowIndex
---	, RANK() OVER (	ORDER BY ps.Tariff DESC) AS PatientRank
---	, DENSE_RANK() OVER (ORDER BY ps.Tariff DESC) AS PatientDenseRank
---	, NTILE(10) OVER (ORDER BY ps.Tariff DESC) AS PatientIdDecile
+	, RANK() OVER (	ORDER BY ps.Tariff DESC) AS PatientRank
+	, DENSE_RANK() OVER (ORDER BY ps.Tariff DESC) AS PatientDenseRank
+	, NTILE(10) OVER (ORDER BY ps.Tariff DESC) AS PatientIdDecile
 FROM
 	PatientStay ps
 ORDER BY
